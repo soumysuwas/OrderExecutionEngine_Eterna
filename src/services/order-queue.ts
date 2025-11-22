@@ -3,13 +3,17 @@ import Redis from 'ioredis';
 import { config } from '../config';
 import { CreateOrderDto } from '../types';
 
-// Create Redis connection
-const connection = new Redis({
-    host: config.redis.host,
-    port: config.redis.port,
-    password: config.redis.password,
-    maxRetriesPerRequest: null,
-});
+// Create Redis connection - use REDIS_URL if available (Render), otherwise use individual config (local)
+const connection = config.redis.url
+    ? new Redis(config.redis.url, {
+        maxRetriesPerRequest: null,
+    })
+    : new Redis({
+        host: config.redis.host,
+        port: config.redis.port,
+        password: config.redis.password,
+        maxRetriesPerRequest: null,
+    });
 
 // Create order execution queue
 export const orderQueue = new Queue('order-execution', {
@@ -33,15 +37,15 @@ export const orderQueue = new Queue('order-execution', {
 export const queueEvents = new QueueEvents('order-execution', { connection });
 
 // Setup event listeners
-queueEvents.on('completed', ({ jobId }) => {
+queueEvents.on('completed', ({ jobId }: { jobId: string }) => {
     console.log(`[Queue] Job ${jobId} completed`);
 });
 
-queueEvents.on('failed', ({ jobId, failedReason }) => {
+queueEvents.on('failed', ({ jobId, failedReason }: { jobId: string; failedReason: string }) => {
     console.error(`[Queue] Job ${jobId} failed: ${failedReason}`);
 });
 
-queueEvents.on('progress', ({ jobId, data }) => {
+queueEvents.on('progress', ({ jobId, data }: { jobId: string; data: any }) => {
     console.log(`[Queue] Job ${jobId} progress:`, data);
 });
 

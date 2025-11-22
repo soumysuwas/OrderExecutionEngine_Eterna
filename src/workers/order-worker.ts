@@ -4,13 +4,17 @@ import { config } from '../config';
 import orderExecutor from '../services/order-executor';
 import { CreateOrderDto } from '../types';
 
-// Create Redis connection for worker
-const connection = new Redis({
-    host: config.redis.host,
-    port: config.redis.port,
-    password: config.redis.password,
-    maxRetriesPerRequest: null,
-});
+// Create Redis connection for worker - use REDIS_URL if available (Render), otherwise use individual config (local)
+const connection = config.redis.url
+    ? new Redis(config.redis.url, {
+        maxRetriesPerRequest: null,
+    })
+    : new Redis({
+        host: config.redis.host,
+        port: config.redis.port,
+        password: config.redis.password,
+        maxRetriesPerRequest: null,
+    });
 
 /**
  * Process order execution jobs
