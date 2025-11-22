@@ -2,6 +2,26 @@
 
 A production-grade order execution engine with DEX routing, WebSocket status updates, and concurrent order processing for Solana-based trading.
 
+## 🌐 Live Deployment
+
+**🔗 API Base URL**: https://orderexecutionengine-eterna.onrender.com
+
+**Quick Test:**
+```bash
+# Health Check
+curl https://orderexecutionengine-eterna.onrender.com/api/health
+
+# Submit Order
+curl https://orderexecutionengine-eterna.onrender.com/api/orders/execute \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"tokenIn":"SOL","tokenOut":"USDC","amount":100}'
+```
+
+> **Note**: Free tier spins down after 15 min of inactivity. First request may take 30-60 seconds to wake up.
+
+---
+
 ## 🎯 Overview
 
 This backend service processes **Market Orders** with intelligent routing between Raydium and Meteora DEXs, providing real-time status updates via WebSocket connections. Built with TypeScript, Fastify, BullMQ, and PostgreSQL.
